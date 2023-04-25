@@ -1,0 +1,112 @@
+#include <iostream>
+using namespace std;
+
+struct node {
+  int key;
+  struct node *left, *right;
+};
+
+// Inorder traversal
+void traverseInOrder(struct node *root) {
+  if (root != NULL) {
+    traverseInOrder(root->left); // traverse left 
+    cout << root->key << " "; // print root key
+    traverseInOrder(root->right); // traverse right
+  }
+}
+
+// Insert a node
+struct node *insertNode(struct node *node, int key) {
+  if (node == NULL) { //  tree is empty create new node
+    node = new struct node;
+    node->key = key;
+    node->left = node->right = NULL;
+  }
+  else if (key < node->key) { // key is < than the node's key, insert in left
+    node->left = insertNode(node->left, key);
+  }
+  else if (key > node->key) { // key is > than the node's key insert in the   right 
+    node->right = insertNode(node->right, key);
+  }
+  // key is = to node's key, do nothing 
+  return node;
+}
+
+// Find min key in a subtree rooted at a given node
+struct node *findminimum(struct node *node) {
+  if (node == NULL) { //  tree is empty, return NULL
+    return NULL;
+  }
+  else if (node->left == NULL) { //  left  is empty, return current node (it is the minimum)
+    return node;
+  }
+  else { //  go to left subtree and find  min
+    return findminimum(node->left);
+  }
+}
+
+// Deleting a node
+struct node *deleteNode(struct node *root, int key) {
+  if (root == NULL) { // if the tree is empty, return NULL
+    return NULL;
+  }
+  else if (key < root->key) { // ifkey < root's key delete fro left subtree
+    root->left = deleteNode(root->left, key);
+  }
+  else if (key > root->key) { // key > root's key delete from right subtree
+    root->right = deleteNode(root->right, key);
+  }
+  else { // if the key = root's key, delete the root node
+    if (root->left == NULL && root->right == NULL) { // no children
+      delete root; // 
+      root = NULL; // set the pointer to NULL
+    }
+
+
+    else if (root->left == NULL) { // only right child
+      struct node *t = root; // current node in a temporary variable
+      root = root->right; //right child as the new root
+      delete t; // 
+    }
+    else if (root->right == NULL) { //  only left child
+      struct node *t = root; //  current node in a temporary variable
+      root = root->left; //  left child as the new root
+      delete t; // 
+    }
+    else { // two children
+      struct node *t = findminimum(root->right); //  the successor of the root
+      root->key = t->key; // successor's key to the root
+      root->right = deleteNode(root->right, t->key); // delete  successor from right subtree
+    }
+  }
+  return root;
+}
+
+// Driver code
+int main() {
+  struct node *root = NULL;
+
+  int operation;
+  int operand;
+  cin >> operation;
+
+  while (operation != -1) {
+    switch(operation) {
+      case 1: // insert
+        cin >> operand;
+        root = insertNode(root, operand);
+        cin >> operation;
+        break;
+      case 2: // delete
+        cin >> operand;
+        root = deleteNode(root, operand);
+        cin >> operation;
+        break;
+      default:
+        cout << "Invalid Operator!\n";
+        return 0;
+    }
+  }
+  
+  traverseInOrder(root);
+}
