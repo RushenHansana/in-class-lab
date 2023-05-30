@@ -1,0 +1,49 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+#define INFINITY 0x3f3f3f3f
+typedef pair<int, int> Pair;
+
+void dijkstra(vector<vector<int>> graph, int numVertices, int source) {
+    int total=0;
+    auto avg =0;
+    priority_queue<Pair, vector<Pair>, greater<Pair>> minHeap;
+    vector<int> shortestTimes(numVertices, INFINITY);
+    minHeap.push(make_pair(0, source));
+    shortestTimes[source] = 0;
+    while (!minHeap.empty()) {
+        int currentCity = minHeap.top().second;
+        minHeap.pop();
+        for (int nextCity = 0; nextCity < numVertices; nextCity++) {
+            if (graph[currentCity][nextCity]) {
+                int time = graph[currentCity][nextCity];
+                if (shortestTimes[nextCity] > shortestTimes[currentCity] + time) {
+                    shortestTimes[nextCity] = shortestTimes[currentCity] + time;
+                    minHeap.push(make_pair(shortestTimes[nextCity], nextCity));
+                }
+            }
+        }
+    }
+    cout << "Shortest time from city " << source << " to other cities:" << endl;
+    for (int i = 0; i < numVertices; ++i){
+        total += shortestTimes[i];
+        cout << i << ": " << shortestTimes[i] << endl;
+    }
+        avg = total/5;
+        cout <<"average " <<avg << endl;
+}
+
+int main() {
+    
+    
+    int numVertices = 6;
+    vector<vector<int>> graph = {{0, 10, INFINITY, INFINITY, 15, 5},
+                                 {10, 0, 10, 30, INFINITY, INFINITY},
+                                 {INFINITY, 10, 0, 12, 5, INFINITY},
+                                 {INFINITY, 30, 12, 0, INFINITY, 20},
+                                 {15, INFINITY, 5, INFINITY, 0, INFINITY},
+                                 {5, INFINITY, INFINITY, 20, INFINITY, 0}};
+    dijkstra(graph,numVertices ,0);
+    return 0;
+}
